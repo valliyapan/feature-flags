@@ -1,0 +1,19 @@
+.flags-table-container {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flags-table {
+    border-spacing: 40px 40px;
+    margin-top: 40px;
+    box-sizing: border-box;
+}
+
+tr {
+    text-align: left;
+    padding: 8px;
+    margin-bottom: 10px;
+}

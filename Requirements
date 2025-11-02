@@ -1,0 +1,113 @@
+Feature Flags Dashboard
+ 
+Tech Stack:
+Backend: Node.js + Express (or any simple REST framework)
+Frontend: React (preferred) or any modern SPA framework
+Database: In-memory (no need for real DB)
+
+1. App Details
+You need to build a Feature Flags Dashboard where users can:
+View all feature flags and their status (ON/OFF)
+Search for flags by name or key
+Toggle a flag’s enabled status
+Handle concurrent updates correctly (conflict detection)
+See summary stats (total / enabled / disabled)
+Think of it as a mini internal developer tool for managing feature rollouts.
+ 
+2. What the App Does
+Shows a list of feature flags from the backend
+Allows searching by keyword
+Lets the user toggle any flag (enabled ↔ disabled)
+Displays summary stats at the top (e.g. “3 enabled / 2 disabled”)
+Handles version conflicts gracefully (if someone else updated the flag before you)
+
+3. Data Structure / Architecture
+Each Feature Flag object should look like this:
+ 
+{
+  "key": "checkout_v2",
+  "name": "New Checkout Flow",
+  "enabled": true,
+  "owner": "pm@company.com",
+  "updatedAt": "2025-10-29T10:15:00Z",
+  "version": 3
+}
+ 
+Notes
+key – unique identifier for the flag
+enabled – true = ON, false = OFF
+version – integer that increments every time a flag is updated (used for concurrency control)
+updatedAt – last updated timestamp
+Store these in memory (array or object).
+No need for a real database.
+ 
+ 
+4. Backend API Requirements
+You must build the following REST endpoints.
+GET /flags?search=...
+Returns a list of all flags.
+If search query is provided, return only flags whose key or name includes the search text (case-insensitive).
+Example:
+GET /flags?search=check → returns flags with “check” in their key/name.
+
+PATCH /flags/:key
+Toggle or update a flag’s enabled state.
+Request body:
+Validate the version:
+If version in request ≠ current version → return 409 Conflict with:
+On success:
+Update enabled
+Increment version
+Update updatedAt
+Return updated flag
+
+GET /stats
+Returns a summary of total, enabled, and disabled flags.
+Auth Requirement
+All API requests must include a header:
+x-api-key: testkey 
+If missing or wrong → return 401 Unauthorized.
+
+5. Frontend Requirements
+Main Page
+Display a search input box.
+Debounce input by ~300ms before calling backend.
+Display the flags in a table/list:
+Columns: Key, Name, Owner, Enabled (toggle), Updated At
+Show the stats summary above the table (from /stats).
+Toggle Behavior
+When user flips a toggle:
+Immediately update UI (optimistic update)
+Call PATCH /flags/:key
+If success → refresh that flag’s row with returned data
+If 409 conflict → rollback the change and show error message (“Updated by someone else”)
+If any other error → rollback and show “Something went wrong”
+Extra (optional)
+Show loading states while fetching data
+Nicely handle empty or error states
+Simple, clean UI (no need for fancy styling)
+
+6. Example Initial Data
+Seed your backend with 5–6 flags:
+Key	Name	Enabled	Owner
+checkout_v2	New Checkout Flow	true	pm@corp.com
+ab_banner	Homepage Banner Test	false	mkt@corp.com
+fast_search	Fast Search Rollout	true	search@corp.com
+price_fix	Price Rounding Feature	false	fin@corp.com
+recs_v3	Recommendations Engine v3	true	ml@corp.com
+
+7. Evaluation Criteria
+Area	What We’re Looking For
+Backend	Clean API structure, correct HTTP codes, version conflict handling
+Frontend	Debounced search, optimistic UI, rollback handling, clean component design
+Code Quality	Modular, readable, clear naming
+Completeness	All endpoints + basic UI functionality
+Depth	How gracefully errors & concurrency are handled
+
+8. Deliverables
+Backend: simple Node.js server (single file or small structure)
+Frontend: React app (minimal UI is fine)
+Both should run locally with npm start
+Provide brief README.md with instructions to start both parts.
+
+lokesh@sheshi.ai
