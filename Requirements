@@ -109,5 +109,3 @@ Backend: simple Node.js server (single file or small structure)
 Frontend: React app (minimal UI is fine)
 Both should run locally with npm start
 Provide brief README.md with instructions to start both parts.
-
-lokesh@sheshi.ai
